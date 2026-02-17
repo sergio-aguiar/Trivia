@@ -41,16 +41,15 @@ public class Trivia implements ModInitializer {
 
         ServerTickEvents.START_SERVER_TICK.register(server -> {
             if (!quiz.quizInProgress() && (server.getPlayerManager().getPlayerList().size() > 0)) {
-                if (quizIntervalCounter >= config.getQuizInterval()) {
+                if (quizIntervalCounter >= config.getQuizIntervalBuffer() + quiz.getCurrentInterval()) {
                     quizIntervalCounter = 0;
                     quiz.startQuiz(server);
                 } else {
                     quizIntervalCounter++;
                 }
             } else {
-                if (quizTimeOutCounter >= config.getQuizTimeOut()) {
+                if (quizTimeOutCounter >= config.getQuizAnswerBuffer() + quiz.getCurrentTimeout()) {
                     quizTimeOutCounter = 0;
-                    quizIntervalCounter = 0;
                     quiz.timeOutQuiz(server); // move timeout message to this function later
                 } else {
                     quizTimeOutCounter++;
@@ -73,5 +72,4 @@ public class Trivia implements ModInitializer {
     public static Trivia getInstance() {
         return instance;
     }
-
 }

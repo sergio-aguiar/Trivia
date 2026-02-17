@@ -21,6 +21,8 @@ public class QuizManager {
     private Long questionTime = System.currentTimeMillis();
     private List<Question> questionPool = new ArrayList<>();
     private RewardManager rewardManager = null;
+    private int currentTimeout = 0;
+    private int currentInterval = 0;
 
     public QuizManager() {
         try {
@@ -166,6 +168,14 @@ public class QuizManager {
         return false;
     }
 
+    public int getCurrentTimeout() {
+        return currentTimeout;
+    }
+
+    public int getCurrentInterval() {
+        return currentInterval;
+    }
+
     public void startQuiz(MinecraftServer server) {
         // Get a random question from the pool
         currentQuestion = questionPool.get((int) (Math.random() * questionPool.size()));
@@ -179,6 +189,12 @@ public class QuizManager {
 
         // Set the time the question was asked
         questionTime = System.currentTimeMillis();
+
+        // Set the timeout time from 0 to the configured value, which is then used to count beyond the buffer time
+        currentTimeout = (int) (Math.random() * Trivia.getInstance().config.getQuizTimeOut());
+
+        // Set the interval time between the end of this quiz and the start of the next
+        currentInterval = (int) (Math.random() * Trivia.instance.config.getQuizInterval());
     }
 
     public void processQuizWinner(ServerPlayerEntity player, MinecraftServer server) {
@@ -210,5 +226,4 @@ public class QuizManager {
         );
         this.currentQuestion = null;
     }
-
 }

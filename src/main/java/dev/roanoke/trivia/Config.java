@@ -24,6 +24,8 @@ public class Config {
                 // If the file doesn't exist, create it with default values
                 setQuizTimeOut(450);
                 setQuizInterval(120);
+                setQuizAnswerBuffer(80);
+                setQuizIntervalBuffer(60);
                 save();
             }
         } catch (IOException e) {
@@ -46,6 +48,24 @@ public class Config {
 
     public void setQuizInterval(int interval) {
         properties.setProperty("quizInterval", String.valueOf(interval));
+        save();
+    }
+
+    public int getQuizAnswerBuffer() {
+        return Integer.parseInt(properties.getProperty("quizAnswerBuffer")) * 20;
+    }
+
+    public void setQuizAnswerBuffer(int buffer) {
+        properties.setProperty("quizAnswerBuffer", String.valueOf(buffer));
+        save();
+    }
+
+    public int getQuizIntervalBuffer() {
+        return Integer.parseInt(properties.getProperty("quizIntervalBuffer")) * 20;
+    }
+
+    public void setQuizIntervalBuffer(int buffer) {
+        properties.setProperty("quizIntervalBuffer", String.valueOf(buffer));
         save();
     }
 

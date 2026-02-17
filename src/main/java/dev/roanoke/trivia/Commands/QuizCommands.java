@@ -20,25 +20,33 @@ public class QuizCommands {
     public QuizCommands() {
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             dispatcher.register(
-                    literal("trivia")
-                            .then(
-                                    literal("interval")
-                                            .requires(Permissions.require("trivia.interval", 4))
-                                            .then(argument("intervalSeconds", IntegerArgumentType.integer(1, 999999)).executes(this::executeQuizInterval))
-                            )
-                            .then(
-                                    literal("start").requires(Permissions.require("trivia.start", 4))
-                                            .executes(this::executeStartQuiz)
-                            )
-                            .then(
-                                    literal("reload").requires(Permissions.require("trivia.reload", 4))
-                                            .executes(this::executeReloadQuiz)
-                            )
-                            .then(
-                                    literal("timeout").requires(Permissions.require("trivia.timeout", 4))
-                                            .then(argument("timeoutSeconds", IntegerArgumentType.integer(1, 999999)).executes(this::executeQuizTimeout))
-                            )
-            );
+                literal("trivia")
+                    .then(
+                        literal("interval")
+                            .requires(source -> LuckPermsUtils.hasPermission(source, "trivia.interval"))
+                            .then(argument("intervalSeconds", IntegerArgumentType.integer(1, 999999)).executes(this::executeQuizInterval))
+                    )
+                    .then(
+                        literal("start").requires(source -> LuckPermsUtils.hasPermission(source, "trivia.start"))
+                            .executes(this::executeStartQuiz)
+                    )
+                    .then(
+                        literal("reload").requires(source -> LuckPermsUtils.hasPermission(source, "trivia.reload"))
+                            .executes(this::executeReloadQuiz)
+                    )
+                    .then(
+                        literal("timeout").requires(source -> LuckPermsUtils.hasPermission(source, "trivia.timeout"))
+                            .then(argument("timeoutSeconds", IntegerArgumentType.integer(1, 999999)).executes(this::executeQuizTimeout))
+                    )
+                    .then(
+                        literal("answerbuffer").requires(source -> LuckPermsUtils.hasPermission(source, "trivia.answerbuffer"))
+                            .then(argument("answerBuffer", IntegerArgumentType.integer(1, 999999)).executes(this::executeQuizAnswerBuffer))
+                    )
+                    .then(
+                        literal("intervalbuffer").requires(source -> LuckPermsUtils.hasPermission(source, "trivia.intervalbuffer"))
+                            .then(argument("intervalbuffer", IntegerArgumentType.integer(1, 999999)).executes(this::executeQuizIntervalBuffer))
+                    )
+        );
         });
     }
 
@@ -51,6 +59,18 @@ public class QuizCommands {
     private int executeQuizInterval(CommandContext<ServerCommandSource> ctx) {
         Trivia.getInstance().config.setQuizInterval(ctx.getArgument("intervalSeconds", Integer.class));
         ctx.getSource().sendMessage(Text.literal("Updated Quiz Interval to " + ctx.getArgument("intervalSeconds", Integer.class) + " seconds."));
+        return 1;
+    }
+
+    private int executeQuizAnswerBuffer(CommandContext<ServerCommandSource> ctx) {
+        Trivia.getInstance().config.setQuizAnswerBuffer(ctx.getArgument("answerBuffer", Integer.class));
+        ctx.getSource().sendMessage(Text.literal("Updated Quiz answer buffer to " + ctx.getArgument("answerBuffer", Integer.class) + " seconds."));
+        return 1;
+    }
+
+    private int executeQuizIntervalBuffer(CommandContext<ServerCommandSource> ctx) {
+        Trivia.getInstance().config.setQuizAnswerBuffer(ctx.getArgument("intervalbuffer", Integer.class));
+        ctx.getSource().sendMessage(Text.literal("Updated Quiz interval buffer to " + ctx.getArgument("intervalbuffer", Integer.class) + " seconds."));
         return 1;
     }
 

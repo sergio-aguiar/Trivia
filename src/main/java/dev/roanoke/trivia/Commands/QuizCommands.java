@@ -10,6 +10,7 @@ import net.minecraft.text.Text;
 import dev.roanoke.trivia.Config;
 import dev.roanoke.trivia.Quiz.QuizManager;
 import dev.roanoke.trivia.Trivia;
+import dev.roanoke.trivia.Utils.LuckPermsUtils;
 import dev.roanoke.trivia.Utils.Messages;
 
 import static net.minecraft.server.command.CommandManager.argument;

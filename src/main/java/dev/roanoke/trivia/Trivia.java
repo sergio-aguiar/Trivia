@@ -43,13 +43,13 @@ public class Trivia implements ModInitializer {
             if (!quiz.quizInProgress() && (server.getPlayerManager().getPlayerList().size() > 0)) {
                 if (quizIntervalCounter >= config.getQuizIntervalBuffer() + quiz.getCurrentInterval()) {
                     quizIntervalCounter = 0;
+                    quizTimeOutCounter = 0;
                     quiz.startQuiz(server);
                 } else {
                     quizIntervalCounter++;
                 }
             } else {
                 if (quizTimeOutCounter >= config.getQuizAnswerBuffer() + quiz.getCurrentTimeout()) {
-                    quizTimeOutCounter = 0;
                     quiz.timeOutQuiz(server); // move timeout message to this function later
                 } else {
                     quizTimeOutCounter++;
@@ -60,7 +60,7 @@ public class Trivia implements ModInitializer {
 
         ServerMessageEvents.CHAT_MESSAGE.register((message, sender, params) -> {
             if (quiz.quizInProgress()) {
-                if (quiz.isRightAnswer(message.getContent().getString())) {
+                if (quiz.isRightAnswer(message.getContent().getString().trim().replaceAll("\\s+", " "))) {
                     LOGGER.info("Trivia question was answered correctly.");
                     quiz.processQuizWinner(sender, sender.server);}
             }

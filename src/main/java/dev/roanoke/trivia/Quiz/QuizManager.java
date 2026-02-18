@@ -126,7 +126,7 @@ public class QuizManager {
                 JsonArray answersArr = questionObj.get("answers").getAsJsonArray();
                 List<String> answers = new ArrayList<>();
                 for (JsonElement answerElem : answersArr) {
-                    answers.add(answerElem.getAsString().toLowerCase());
+                    answers.add(answerElem.getAsString().toLowerCase().replace('-', ' ').trim().replaceAll("\\s+", " "));
                 }
 
                 // Create the TriviaQuestion object and add it to the list
@@ -177,6 +177,12 @@ public class QuizManager {
     }
 
     public void startQuiz(MinecraftServer server) {
+        // Set the timeout time from 0 to the configured value, which is then used to count beyond the buffer time
+        currentTimeout = (int) (Math.random() * Trivia.getInstance().config.getQuizTimeOut());
+
+        // Set the interval time between the end of this quiz and the start of the next
+        currentInterval = (int) (Math.random() * Trivia.instance.config.getQuizInterval());
+
         // Get a random question from the pool
         currentQuestion = questionPool.get((int) (Math.random() * questionPool.size()));
 
@@ -189,12 +195,6 @@ public class QuizManager {
 
         // Set the time the question was asked
         questionTime = System.currentTimeMillis();
-
-        // Set the timeout time from 0 to the configured value, which is then used to count beyond the buffer time
-        currentTimeout = (int) (Math.random() * Trivia.getInstance().config.getQuizTimeOut());
-
-        // Set the interval time between the end of this quiz and the start of the next
-        currentInterval = (int) (Math.random() * Trivia.instance.config.getQuizInterval());
     }
 
     public void processQuizWinner(ServerPlayerEntity player, MinecraftServer server) {
@@ -220,6 +220,7 @@ public class QuizManager {
         }
         Map<String, String> placeholders = new HashMap<>();
         placeholders.put("{answer}", String.join(", ", currentQuestion.answers));
+        placeholders.put("{time}", String.valueOf(((System.currentTimeMillis() - questionTime) / 1000)));
 
         server.getPlayerManager().getPlayerList().forEach(serverPlayer -> serverPlayer.sendMessage(
                 Trivia.messages.getDisplayText(Trivia.messages.getMessage("trivia.no_answer", placeholders)))
